@@ -6,26 +6,16 @@
 /*   By: mmonpeat <mmonpeat@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/30 19:18:51 by mmonpeat          #+#    #+#             */
-/*   Updated: 2023/01/26 17:42:56 by mmonpeat         ###   ########.fr       */
+/*   Updated: 2023/01/26 17:50:56 by mmonpeat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "libftprintf.h"
-#include <stdio.h>
-int main(){
-	//ft_printf("hola va amb %s %c  %% \n", "hola", 'u');
-	printf("main bytes: %i", ft_printf("%i\n", -214));
-	//ft_printf("%i", -345577);
-	//ft_printf("unsigned int == %u\n", 111);
-	//printf("BYTES == %d\n", ft_printf("%i\n", -34567));
-	return (0);
-}
 
 int	ft_putchar(char c)
 {
-	if(write(1, &c, 1) != 1)//cada vegada que fa if, fa el write
+	if (write(1, &c, 1) != 1)//cada vegada que fa if, fa el write
 		return (-1);
 	return (1);
-	//return(write(1, &c, 1));
 }
 
 int	ft_putstr(char *s)
@@ -50,7 +40,7 @@ int	ft_putusnum(unsigned int u)
 	if (u < 10)
 	{
 		digit = u + '0';
-		if (write(1, &digit, 1) != 1)//maybe u
+		if (write(1, &digit, 1) != 1)
 			return (-1);
 		return (1);
 	}
