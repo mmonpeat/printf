@@ -1,32 +1,32 @@
 NAME	= libftprintf.a
 
-HEADER	= libftprintf.h
+HEADER	= ft_printf.h
 
 INCLUDE = -I./
 
-SRCS	= ft_printf.c
+SRCS	= ft_printf.c ft_funlibft.c ft_funxp.c
 
-OBJS	= ${SRCS:..c=.o}
+OBJS	= ${SRCS:.c=.o}
 
-DEPS	= $(addsufix .d, $(basename ${OBJS}))
+DEPS	= $(addsuffix .d, $(basename ${OBJS}))
 
 CC		= gcc
 
 CFLAGS	= -Wall -Wextra -Werror
 
-%.o : %.c Makefile
+%.o: %.c Makefile
 	${CC} -MT $@ ${CFLAGS} -MMD -MP ${INCLUDE} -c $< -o $@
 
 all:	${NAME}
 
-${NAME}:	${OBJS}
+${NAME}: ${OBJS}
 	ar src ${NAME} ${OBJS}
 
 -include	${DEPS}
 
 clean: 
 			rm -rf ${OBJS} ${DEPS}
-
+			
 fclean:		clean
 			rm -rf ${NAME}
 

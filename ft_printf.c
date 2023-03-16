@@ -6,10 +6,12 @@
 /*   By: mmonpeat <mmonpeat@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/30 19:18:00 by mmonpeat          #+#    #+#             */
-/*   Updated: 2023/01/26 17:43:02 by mmonpeat         ###   ########.fr       */
+/*   Updated: 2023/03/16 16:07:08 by mmonpeat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libftprintf.h"
+#include "ft_printf.h"
+
+static int	ft_errors(const char *str, va_list ptr, int *bytes, int i);
 
 int	ft_printf(char const *str, ...)
 {
@@ -19,45 +21,62 @@ int	ft_printf(char const *str, ...)
 
 	i = 0;
 	bytes = 0;
-	va_start(ptr, str);//el primer bytesument/parametre es str
+	va_start (ptr, str);
 	while (str[i] != '\0')
 	{
 		if (str[i] != '%')
 		{
-			bytes += write (1, &str[i],  1);
-			i++;//conta caracters que hi ha al str
+			if (write (1, &str[i++], 1) != 1)
+				return (-1);
+			bytes++;
 		}
 		else
 		{
-			//i = i + print_percent((char *)(str + i), ptr, bytes);
-			bytes +=  print_percent((char *)(str + i + 1), ptr);
-			i += 2;	// Para saltarse el %i <-- Cualquier formato
-			//printf("\nbytes in function: %i\n", bytes);
+			if (ft_errors(str, ptr, &bytes, i) == -1)
+				return (-1);
+			i += 2;
 		}
 	}
 	va_end (ptr);
-	//return (i);
 	return (bytes);
 }
 
-int	print_percent(char *str, va_list ptr)//, int bytes)
+int	print_percent(char *str, va_list ptr)
 {
+	int	i;
+
+	i = 0;
 	if (*str == 'c')
-		return (ft_putchar (va_arg(ptr, int)));//es int ascii, un caracter
+		i = ft_putchar (va_arg(ptr, int));
 	else if (*str == 's')
-		return (ft_putstr (va_arg(ptr, char *)));
-	/*else if (*str == 'p')//void * == unsigned long
-		putvoid(va_bytes(ptr, unsigned long));*/
+		i = (ft_putstr (va_arg(ptr, char *)));
+	else if (*str == 'p')
+	{
+		if (write(1, &"0x", 2) != 2)
+			return (-1);
+		i = ft_putvoid(va_arg(ptr, unsigned long));
+		i += 2;
+	}
 	else if (*str == 'i' || *str == 'd')
-		return (ft_putnum (va_arg(ptr, int)));
-	else if(*str == 'u')
-		ft_putusnum(va_arg(ptr, unsigned int));
-	/*else if(*str == 'x')
-		ft_puthex(va_arg(ptr, unsigned int), "0123456789abcdef");
-	else if(*str == 'X')
-		ft_puthex(va_arg(ptr, unsigned int), "0123456789ABCDEF");*/
-	else if(*str == '%')
+		i = (ft_putnum (va_arg(ptr, int)));
+	else if (*str == 'u')
+		i = ft_putusnum(va_arg(ptr, unsigned int));
+	else if (*str == 'x')
+		i = ft_puthex(va_arg(ptr, unsigned int), "0123456789abcdef");
+	else if (*str == 'X')
+		i = ft_puthex(va_arg(ptr, unsigned int), "0123456789ABCDEF");
+	else if (*str == '%')
 		return (ft_putchar('%'));
-	return (0);
+	return (i);
 }
 
+static int	ft_errors(const char *str, va_list ptr, int *bytes, int i)
+{
+	int	x;
+
+	x = print_percent((char *)(str + i + 1), ptr);
+	if (x == -1)
+		return (-1);
+	*bytes += x;
+	return (0);
+}

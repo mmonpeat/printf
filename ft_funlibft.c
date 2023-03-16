@@ -6,16 +6,14 @@
 /*   By: mmonpeat <mmonpeat@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/30 19:18:51 by mmonpeat          #+#    #+#             */
-/*   Updated: 2023/01/26 17:50:56 by mmonpeat         ###   ########.fr       */
+/*   Updated: 2023/03/16 18:35:53 by mmonpeat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libftprintf.h"
+#include "ft_printf.h"
 
 int	ft_putchar(char c)
 {
-	if (write(1, &c, 1) != 1)//cada vegada que fa if, fa el write
-		return (-1);
-	return (1);
+	return (write(1, &c, 1));
 }
 
 int	ft_putstr(char *s)
@@ -23,18 +21,23 @@ int	ft_putstr(char *s)
 	int	i;
 
 	i = 0;
-	while (s[i])
+	if (!s)
+		return (write(1, "(null)", 6));
+	while (s[i] != '\0')
 	{
-		ft_putchar (s[i]);
+		if (ft_putchar (s[i]) == -1)
+			return (-1);
 		i++;
 	}
-	return (s[i]);
+	return (i);
 }
 
 int	ft_putusnum(unsigned int u)
 {
 	char	digit;
 	int		i;
+	int		x;
+	int		y;
 
 	i = 0;
 	if (u < 10)
@@ -46,8 +49,14 @@ int	ft_putusnum(unsigned int u)
 	}
 	else if (u > 9)
 	{
-		i += ft_putnum(u / 10);
-		i += ft_putnum(u % 10);
+		x = ft_putusnum(u / 10);
+		if (x == -1)
+			return (-1);
+		i += x;
+		y = ft_putusnum(u % 10);
+		if (y == -1)
+			return (-1);
+		i += y;
 	}
 	return (i);
 }
@@ -55,6 +64,7 @@ int	ft_putusnum(unsigned int u)
 int	ft_putnum(int n)
 {
 	int		i;
+	int		j;
 
 	i = 0;
 	if (n == -2147483648)
@@ -67,30 +77,38 @@ int	ft_putnum(int n)
 	{
 		if (write (1, "-", 1) == -1)
 			return (-1);
-		i++;//sumes el -
 		n = -n;
-	}	
-	i = ft_putaux(n, i);
-	if (i == -1)
+		i++;
+	}
+	j = ft_putaux(n, 0);
+	if (j == -1)
 		return (-1);
-	return (i);
+	return (i + j);
 }
 
 int	ft_putaux(int n, int i)
 {
 	char	digit;
+	int		x;
+	int		y;
 
-	if (n < 10)
+	if (n < 10 && n >= 0)
 	{
 		digit = n + '0';
-		if (write(1, &digit, 1) != 1)
+		if (i == -1)
 			return (-1);
-		return (1);
+		return (write(1, &digit, 1));
 	}
-	else if (n > 10)
+	if (n >= 10)
 	{
-		i += ft_putnum(n / 10);
-		i += ft_putnum(n % 10);
+		x = ft_putaux(n / 10, i);
+		if (x == -1)
+			return (-1);
+		i += x;
+		y = ft_putaux(n % 10, i);
+		if (y == -1)
+			return (-1);
+		i += y;
 	}
 	return (i);
 }
